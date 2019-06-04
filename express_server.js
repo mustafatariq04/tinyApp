@@ -40,8 +40,10 @@ app.get("/urls/new", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body);
-  // console.log(req.body.longURL);
-  res.send("Ok");
+  let generatedString = generateRandomString(6);
+  urlDatabase[generatedString] = req.body.longURL;
+  console.log(urlDatabase);
+  res.redirect("/urls/" + generatedString);
 });
 
 
