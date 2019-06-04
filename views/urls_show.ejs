@@ -9,10 +9,12 @@
   <title>TinyApp</title>
 </head>
 <body style="font-size:20px; padding:50px;">
+    <% include ./partials/_header %>
     <!-- Add EJS code here -->
-    <h2>TinyApp urlDatabase </h2>
-    <ul><li><%= shortURL %> - <%= longURL %> </li></ul>
-    <a href="#">Create a new URL</a>
+    <h1>TinyApp</h1>
+    <a href="#">Create New TinyURL</a>
+    <h2>TinyURL for <%= longURL %></h2>
+    <h3><%= shortURL %> </h3>
 
 </body>
 </html>

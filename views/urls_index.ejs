@@ -9,15 +9,18 @@
   <title>TinyApp</title>
 </head>
 <body style="font-size:20px; padding:50px;">
+    <% include ./partials/_header %>
     <!-- Add EJS code here -->
-    <h2>TinyApp urlDatabase </h2>
+    <h1>TinyApp </h1>
+    <a href="#">Create New TinyURL</a>
+    <h2>My URLs</h2>
     <ul>
       <% for (let x in urls) { %>
         <li><%= x %> - <%= urls[x] %> </li>
       <% }; %>
     </ul>
 
-    <a href="#">Shorten a new URL</a>
+
 
 </body>
 </html>
