@@ -14,11 +14,12 @@
     <a href="#">Create New TinyURL</a>
     <h2>My URLs</h2>
 
-    <table style="width: 40%">
+    <table style="width:45%">
     <% for (let element in urls) { %>
         <tr>
           <td><%= element %>: <%= urls[element] %>
             <form method="POST" action="/urls/<%= element %>/delete">
+              <td><a href="/urls/<%= element %> ">Edit Link</a></td>
               <td><button type="submit">Delete</button></td>
             </form>
           </td>

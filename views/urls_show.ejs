@@ -10,10 +10,10 @@
 </head>
 <body style="font-size:20px; padding:50px;">
     <% include ./partials/_header %>
-    <!-- Add EJS code here -->
-    <a href="#">Create New TinyURL</a>
-    <h2>TinyURL for <%= longURL %></h2>
-    <h3><%= shortURL %> </h3>
-
+    <h2>ShortURL: <%= shortURL %></h2>
+      <form method="POST" action="/urls/<%= shortURL %>">
+        <input style="width:350px" type="text" placeholder="<%= longURL %>" name="<%= shortURL %>">
+        <td><button type="text">Edit</button></td>
+      </form>
 </body>
 </html>
