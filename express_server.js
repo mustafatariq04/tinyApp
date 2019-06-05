@@ -51,11 +51,19 @@ app.get("/register", (req, res) => {
   res.render("urls_register")
 })
 
-
-// app.post("/register", (req, res) => {
-
-//   res.redirect("/urls")
-// })
+app.post("/register", (req, res) => {
+  let userId = generateRandomString(6);
+  let email = req.body.email;
+  let password = req.body.password;
+  users[userId] = {
+    userId,
+    email,
+    password
+  }
+  res.cookie("userId", userId);
+  console.log(users);
+  res.redirect("/urls")
+})
 
 app.get("/urls/new", (req, res) => {
   let templateVars = { username: req.cookies["username"] };

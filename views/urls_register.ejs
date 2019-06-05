@@ -11,17 +11,17 @@
 <body style="font-size:20px; padding:50px;">
   <h1>TinyApp</h1>
   <a href="/login">Login</a> <span> | </span><a href="/register">Register</a>
+  <br>
+  <br>
   <h2>Create Account</h2>
-  <form method="POST" action="/register">
-    <br>
-    <h3>Email:</h3>
-    <input style="width:350px" type="email" placeholder="Enter email" name="email">
-  </form>
   <br>
   <form method="POST" action="/register">
+    <h3>Email:</h3>
+    <input class="form-control" style="width:350px" type="email" name="email">
     <h3>Password: </h3>
-    <input style="width:350px" type="password" placeholder="Enter password" name="password"></form><br>
-    <input type="submit" value="Submit">
+    <input class="form-control" style="width:350px" type="password" name="password">
+    <br>
+    <button type="submit" value="Submit">Submit</button>
   </form>
 
 </body>
