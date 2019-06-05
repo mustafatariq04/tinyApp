@@ -13,13 +13,18 @@
     <!-- Add EJS code here -->
     <a href="#">Create New TinyURL</a>
     <h2>My URLs</h2>
-    <ul>
-      <% for (let x in urls) { %>
-        <li><%= x %> - <%= urls[x] %> </li>
-      <% }; %>
-    </ul>
 
-
+    <table style="width: 40%">
+    <% for (let element in urls) { %>
+        <tr>
+          <td><%= element %>: <%= urls[element] %>
+            <form method="POST" action="/urls/<%= element %>/delete">
+              <td><button type="submit">Delete</button></td>
+            </form>
+          </td>
+        </tr>
+    <% }; %>
+    </table>
 
 </body>
 </html>
