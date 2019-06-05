@@ -4,8 +4,7 @@
 <% if (!username) { %>
   <form method="POST" action="/login">
     <h4>Username: </h4>
-    <input style:"width:250px" type="text" placeholder="Username" name="username"> </br>
-    <button style="width:150px" type="submit">Login</button>
+    <input style:"width:250px" type="text" placeholder="Username" name="username"> <button type="submit" class="btn btn-primary">Login</button>
   </form>
 <% } else { %>
 <form method="POST" action="/logout">
