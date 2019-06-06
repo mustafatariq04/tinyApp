@@ -55,15 +55,26 @@ app.post("/register", (req, res) => {
   let userId = generateRandomString(6);
   let email = req.body.email;
   let password = req.body.password;
-  users[userId] = {
-    userId,
-    email,
-    password
+  for (let user in users) {
+    if (users[user].email === email) {
+      res.send("This email has already been taken");
+    }
   }
-  res.cookie("userId", userId);
-  console.log(users);
-  res.redirect("/urls")
-})
+  if(email.length == 0 || password.length == 0){
+    res.send("Please provide a valid email and password");
+    res.redirect("/login")
+  } else {
+    users[userId] = {
+      userId,
+      email,
+      password
+    }
+    res.cookie("userId", userId);
+    console.log(users);
+    res.redirect("/urls")
+  }
+});
+
 
 app.get("/urls/new", (req, res) => {
   let templateVars = { username: req.cookies["username"] };
