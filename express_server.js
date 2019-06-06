@@ -17,12 +17,12 @@ var urlDatabase = {
 
 const users = {
   "userRandomID": {
-    id: "userRandomID",
+    userId: "userRandomID",
     email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
  "user2RandomID": {
-    id: "user2RandomID",
+    userId: "user2RandomID",
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
@@ -43,9 +43,48 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { username: req.cookies["username"], urls: urlDatabase };
+  let templateVars = { urls: urlDatabase }
+  if (req.cookies.uId) {
+    templateVars = {
+      urls: urlDatabase,
+      id: req.cookies["uId"],
+      email: users[req.cookies["uId"]].email, 
+      password: users[req.cookies["uId"]].password
+    }
+  }
+  console.log(req.cookies.uId);
+  console.log(users[req.cookies["uId"]]);
+  
   res.render("urls_index", templateVars);
 })
+
+app.get("/urls/new", (req, res) => {
+  let templateVars = {};
+  if (req.cookies.uId) {
+    templateVars = {
+      urls: urlDatabase,
+      id: req.cookies["uId"],
+      email: users[req.cookies["uId"]].email, 
+      password: users[req.cookies["uId"]].password
+    }
+  }
+  res.render("urls_new", templateVars);
+});
+
+app.get("/urls/:shortURL", (req, res) => {
+  let templateVars = {};
+  if (req.cookies.uId) {
+  templateVars = {
+      id: req.cookies["uId"],
+      email: users[req.cookies["uId"]].email, 
+      password: users[req.cookies["uId"]].password,
+      shortURL: req.params.shortURL, 
+      longURL: urlDatabase[req.params.shortURL]}
+  } else {
+  templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]}
+  }
+  res.render("urls_show", templateVars);
+});
 
 app.get("/register", (req, res) => {
   res.render("urls_register")
@@ -62,24 +101,21 @@ app.post("/register", (req, res) => {
   }
   if(email.length == 0 || password.length == 0){
     res.send("Please provide a valid email and password");
-    res.redirect("/login")
   } else {
     users[userId] = {
       userId,
       email,
       password
     }
-    res.cookie("userId", userId);
+    res.cookie("uId", userId);
     console.log(users);
     res.redirect("/urls")
   }
 });
 
-
-app.get("/urls/new", (req, res) => {
-  let templateVars = { username: req.cookies["username"] };
-  res.render("urls_new", templateVars);
-});
+app.get("/login", (req, res) =>{
+  res.render("urls_login")
+})
 
 app.post("/login", (req, res) => {
   res.cookie("username", req.body.username);
@@ -88,7 +124,7 @@ app.post("/login", (req, res) => {
 })
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("uId");
   res.redirect("/urls");
 })
 
@@ -109,11 +145,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls")
 })
-
-app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { username: req.cookies["username"], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
-  res.render("urls_show", templateVars);
-});
 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL]
