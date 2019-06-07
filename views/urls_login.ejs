@@ -9,11 +9,18 @@
   <title>TinyApp</title>
 </head>
 <body style="font-size:20px; padding:50px;">
-    <% include ./partials/_header %>
-    <h2>ShortURL: <%= shortURL %></h2>
-      <form method="POST" action="/urls/<%= shortURL %>">
-        <input style="width:350px" type="text" placeholder="<%= longURL %>" name="<%= shortURL %>">
-        <button type="text">Edit</button>
-      </form>
+  <% include ./partials/_header %>
+  <br>
+  <h2>Login</h2>
+  <br>
+  <form method="POST" action="/login">
+    <h3>Email:</h3>
+    <input class="form-control" style="width:350px" type="email" name="email">
+    <h3>Password: </h3>
+    <input class="form-control" style="width:350px" type="password" name="password">
+    <br>
+    <button class="btn btn-primary type="submit" value="Submit">Login</button>
+  </form>
+
 </body>
 </html>
