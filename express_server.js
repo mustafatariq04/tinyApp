@@ -1,6 +1,6 @@
 var express = require("express");
 var cookieParser = require("cookie-parser")
-
+const bcrypt = require('bcrypt');
 var app = express();
 app.use(cookieParser());
 var PORT = 8080; // default port 8080
@@ -19,17 +19,17 @@ const users = {
   "abc123": {
     userId: "abc123",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
   },
  "user2RandomID": {
     userId: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: bcrypt.hashSync("dishwasher-funk", 10)
   },
   "aJ48lW": {
     userId: "aJ48lW",
     email: "jake@hotmail.com",
-    password: "dog"
+    password: bcrypt.hashSync("dog", 10)
   }
 }
 
@@ -47,7 +47,7 @@ getUserByEmailPassword = (email, password) => {
   let user = null;
   for(let userId in users) {
     console.log('currently processing ', userId)
-    if(users[userId].email === email && users[userId].password === password) {
+    if(users[userId].email === email && bcrypt.compareSync(password, users[userId].password)) {
       user = users[userId];
     }
   }
@@ -136,19 +136,19 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   let userId = generateRandomString(6);
   let email = req.body.email;
-  let password = req.body.password;
+  let hashedPassword = bcrypt.hashSync(req.body.password, 10);
   for (let user in users) {
     if (users[user].email === email) {
       res.send("This email has already been taken");
     }
   }
-  if(email.length == 0 || password.length == 0){
+  if(email.length == 0 || hashedPassword.length == 0){
     res.send("Please provide a valid email and password");
   } else {
     users[userId] = {
       userId,
       email,
-      password
+      hashedPassword
     }
     res.cookie("uId", userId);
     console.log(users);
