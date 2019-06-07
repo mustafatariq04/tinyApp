@@ -11,7 +11,7 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
 const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  sgq3y6: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
   aJ48lW: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 
@@ -103,6 +103,18 @@ app.get("/urls/new", (req, res) => {
 });
 
 
+app.post("/urls/:id", (req, res) => {
+  let templateVars = {
+    user: null
+  }
+  if(req.cookies['uId']) {
+    urlDatabase[req.params.id].longURL = req.body[req.params.id]
+    res.redirect("/urls");
+  }
+  res.send("Please login/register to use TinyApp")
+})
+
+
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
@@ -188,10 +200,6 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls/" + generatedString);
 });
 
-app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body[req.params.id]
-  res.redirect("/urls");
-})
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
