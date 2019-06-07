@@ -79,8 +79,9 @@ app.get("/urls/new", (req, res) => {
   }
   if(req.cookies['uId']) {
     templateVars.user = users[req.cookies['uId']];
+    res.render("urls_new", templateVars);
   }
-  res.render("urls_new", templateVars);
+  res.redirect("/login");
 });
 
 
