@@ -10,14 +10,14 @@ app.set('view engine', 'ejs');
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
-var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+const urlDatabase = {
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  aJ48lW: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 
 const users = {
-  "userRandomID": {
-    userId: "userRandomID",
+  "abc123": {
+    userId: "abc123",
     email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
@@ -26,8 +26,8 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk"
   },
-  "testId": {
-    userId: "testId",
+  "aJ48lW": {
+    userId: "aJ48lW",
     email: "jake@hotmail.com",
     password: "dog"
   }
@@ -55,6 +55,23 @@ getUserByEmailPassword = (email, password) => {
 }
 
 
+function urlsForUser(id) {
+  let urls = {};
+  let key = null;
+  let value = null;
+  for (let shortURLs in urlDatabase) {
+    if(urlDatabase[shortURLs].userID == id) {
+      console.log("urlDatabase with shortULRs:", urlDatabase[shortURLs].userID);
+      console.log("id passed into urlsforuser function: ", id);
+      key = shortURLs;
+      value = urlDatabase[shortURLs].longURL;
+      urls[key] = value;
+    }
+  }
+  return urls;
+}
+
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -62,14 +79,15 @@ app.get("/", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    urls: urlDatabase,
     user: null
-  };
-  if(req.cookies['uId']) {
-    templateVars.user = users[req.cookies['uId']];
   }
-  res.render("urls_index", templateVars);
-})
+  if(req.cookies['uId']) {
+    templateVars.user = users[req.cookies['uId']],
+    templateVars.urls = urlsForUser([req.cookies['uId']]),
+    res.render("urls_index", templateVars)
+  }
+  res.send("Please login and/or register to use TinyApp")
+});
 
 
 app.get("/urls/new", (req, res) => {
@@ -97,8 +115,6 @@ app.get("/urls/:shortURL", (req, res) => {
   }
   res.render("urls_show", templateVars);
 });
-
-
 
 
 app.get("/register", (req, res) => {
@@ -161,7 +177,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie("uId");
-  res.redirect("/urls");
+  res.redirect("/login");
 })
 
 app.post("/urls", (req, res) => {
