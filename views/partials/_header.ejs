@@ -1,13 +1,21 @@
-<h1>TinyApp</h1>
-
-<% if (id == null) { %>
-  <form method="POST" action="/login">
-    <h4>Username: </h4>
-    <input style:"width:250px" type="text" placeholder="Username" name="username"> <button type="submit" class="btn btn-primary">Login</button>
-  </form>
-<% } else { %>
-  <p>Logged in as: <%= email %></p>
-<form method="POST" action="/logout">
-    <p><input style="width:150px" type="submit" value="Logout" name="logout"></p>
-</form>
-<% } %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial scale=1, shring-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <title>TinyApp</title>
+  </head>
+  <body style="font-size:20px; padding:50px;">
+    <h1>TinyApp</h1>
+    <% if (!user) {%>
+        <br><a href="/register">Register</a> | <a href="/login">Login</a>
+    <% } else { %>
+      <p>Logged in as: <%= user.email %></p>
+      <form method="POST" action="/logout">
+        <button type="submit">Logout</button>
+      </form>
+    <% }; %>
+  </body>
+</html>

@@ -9,9 +9,7 @@
   <title>TinyApp</title>
 </head>
 <body style="font-size:20px; padding:50px;">
-  <h1>TinyApp</h1>
-  <a href="/login">Login</a> <span> | </span><a href="/register">Register</a>
-  <br>
+  <% include ./partials/_header %>
   <br>
   <h2>Login</h2>
   <br>
@@ -21,7 +19,7 @@
     <h3>Password: </h3>
     <input class="form-control" style="width:350px" type="password" name="password">
     <br>
-    <button type="submit" value="Submit">Submit</button>
+    <button class="btn btn-primary type="submit" value="Submit">Login</button>
   </form>
 
 </body>
