@@ -54,50 +54,51 @@ getUserByEmailPassword = (email, password) => {
   return user;
 }
 
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
+
 
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
     user: null
   };
-
   if(req.cookies['uId']) {
     templateVars.user = users[req.cookies['uId']];
   }
-
   res.render("urls_index", templateVars);
 })
+
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
     user: null
   }
-
   if(req.cookies['uId']) {
     templateVars.user = users[req.cookies['uId']];
   }
-
   res.render("urls_new", templateVars);
 });
 
+
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = {user: users};
-  if (req.cookies.uId) {
-  templateVars = {
-      id: req.cookies["uId"],
-      email: users[req.cookies["uId"]].email,
-      password: users[req.cookies["uId"]].password,
-      shortURL: req.params.shortURL,
-      longURL: urlDatabase[req.params.shortURL]}
-  } else {
-  templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]}
+  let templateVars = {
+    urls: urlDatabase,
+    user: null,
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL]
+  }
+  if(req.cookies['uId']) {
+    templateVars.user = users[req.cookies['uId']];
   }
   res.render("urls_show", templateVars);
 });
+
+
+
 
 app.get("/register", (req, res) => {
   res.render("urls_register")
@@ -146,8 +147,6 @@ app.post("/login", (req, res) => {
     res.send('Email and password cannot be empty');
   }
   let user = getUserByEmailPassword(req.body.email, req.body.password);
-  // console.log(user);
-  // console.log(user.userId);
 
   if(user) {
     res.cookie('uId', user.userId)
