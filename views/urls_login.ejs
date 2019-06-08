@@ -10,6 +10,9 @@
 </head>
 <body style="font-size:20px; padding:50px;">
   <% include ./partials/_header %>
+  <% if (loginRedirect) { %>
+    <p style="color:red">*Please register or login to use TinyApp</p>
+  <% }; %>
   <br>
   <h2>Login</h2>
   <br>

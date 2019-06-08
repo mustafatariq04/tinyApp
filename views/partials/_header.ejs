@@ -9,6 +9,9 @@
   </head>
   <body style="font-size:20px; padding:50px;">
     <h1>TinyApp</h1>
+    <form method="POST" action="/urls/new">
+      <button style="width: 250px" type="submit" class="btn btn-primary">Create TinyURL</button>
+    </form>
     <% if (!user) {%>
         <br><a href="/register">Register</a> | <a href="/login">Login</a>
     <% } else { %>

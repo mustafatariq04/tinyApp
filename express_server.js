@@ -1,11 +1,19 @@
 var express = require("express");
-var cookieParser = require("cookie-parser")
+// var cookieParser = require("cookie-parser")
+var cookieSession = require('cookie-session')
+
 const bcrypt = require('bcrypt');
 var app = express();
-app.use(cookieParser());
+// app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ["King", "North"],
+}));
+
 var PORT = 8080; // default port 8080
 
 app.set('view engine', 'ejs');
+app.set('trust proxy', 1)
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
@@ -73,33 +81,44 @@ function urlsForUser(id) {
 
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  if(req.session['uId']) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
 
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    user: null
+    user: null,
+    urls: null,
+    loginRedirect: null
   }
-  if(req.cookies['uId']) {
-    templateVars.user = users[req.cookies['uId']],
-    templateVars.urls = urlsForUser([req.cookies['uId']]),
+  if(req.session['uId']) {
+    templateVars.user = users[req.session['uId']],
+    templateVars.urls = urlsForUser([req.session['uId']]),
     res.render("urls_index", templateVars)
+  } else {
+    templateVars.loginRedirect = true;
+    res.render("urls_login", templateVars);
   }
-  res.send("Please login and/or register to use TinyApp")
 });
 
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    user: null
+    user: null,
+    loginRedirect: null
   }
-  if(req.cookies['uId']) {
-    templateVars.user = users[req.cookies['uId']];
+  if(req.session['uId']) {
+    templateVars.user = users[req.session['uId']];
     res.render("urls_new", templateVars);
+  } else {
+    templateVars.loginRedirect = true;
+    res.render("urls_login", templateVars);
   }
-  res.redirect("/login");
 });
 
 
@@ -107,11 +126,12 @@ app.post("/urls/:id", (req, res) => {
   let templateVars = {
     user: null
   }
-  if(req.cookies['uId']) {
+  if(req.session['uId']) {
     urlDatabase[req.params.id].longURL = req.body[req.params.id]
     res.redirect("/urls");
+  } else {
+    res.send("Please login/register to use TinyApp")
   }
-  res.send("Please login/register to use TinyApp")
 })
 
 
@@ -120,17 +140,26 @@ app.get("/urls/:shortURL", (req, res) => {
     urls: urlDatabase,
     user: null,
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL]
+    longURL: null
   }
-  if(req.cookies['uId']) {
-    templateVars.user = users[req.cookies['uId']];
+  if (!urlDatabase.hasOwnProperty(req.params.shortURL)) {
+    res.send("URL does not exist");
+  } else if(!req.session['uId']) {
+    res.send("Please login to access shortURL")
+  } else if (req.session['uId']) {
+    templateVars.user = users[req.session['uId']];
+    templateVars.longURL = urlDatabase[req.params.shortURL].longURL;
+    res.render("urls_show", templateVars);
   }
-  res.render("urls_show", templateVars);
 });
 
 
 app.get("/register", (req, res) => {
-  res.render("urls_register")
+  if(req.session['uId']) {
+    res.redirect("/urls")
+  } else {
+    res.render("urls_register");
+  }
 })
 
 app.post("/register", (req, res) => {
@@ -150,7 +179,7 @@ app.post("/register", (req, res) => {
       email,
       hashedPassword
     }
-    res.cookie("uId", userId);
+    req.session.uId = userId;
     console.log(users);
     res.redirect("/urls")
   }
@@ -158,27 +187,30 @@ app.post("/register", (req, res) => {
 
 app.get("/login", (req, res) =>{
   let templateVars = {
-    uId: req.cookies["uId"],
+    uId: req.session["uId"],
     urls: urlDatabase,
     userObject: users,
-    user: null
+    user: null,
+    loginRedirect: null
   };
-  if (req.cookies.uId) {
-    templateVars.user = users[req.cookies.uId];
+  if (req.session.uId) {
+    templateVars.user = users[req.session.uId];
+    res.redirect("/urls");
+  } else {
+    res.render("urls_login", templateVars);
   }
-  res.render("urls_login", templateVars);
 });
 
 
 app.post("/login", (req, res) => {
   if (!req.body.email || !req.body.password) {
     res.status(400);
-    res.send('Email and password cannot be empty');
+    return res.send('Email and password cannot be empty');
   }
   let user = getUserByEmailPassword(req.body.email, req.body.password);
 
   if(user) {
-    res.cookie('uId', user.userId)
+    req.session.uId = user.userId;
     res.redirect("/urls");
   } else {
     res.status(400);
@@ -188,7 +220,8 @@ app.post("/login", (req, res) => {
 
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("uId");
+  // res.clearCookie("uId");
+  req.session = null
   res.redirect("/login");
 })
 
