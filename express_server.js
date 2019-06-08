@@ -150,6 +150,8 @@ app.get("/urls/:shortURL", (req, res) => {
     templateVars.user = users[req.session['uId']];
     templateVars.longURL = urlDatabase[req.params.shortURL].longURL;
     res.render("urls_show", templateVars);
+  } else {
+    res.send("The URL does not belong to the current user - please create a new URL")
   }
 });
 
