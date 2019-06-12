@@ -1,26 +1,25 @@
 var express = require("express");
-// var cookieParser = require("cookie-parser")
 var cookieSession = require('cookie-session')
 
 const bcrypt = require('bcrypt');
 var app = express();
-// app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
   keys: ["King", "North"],
 }));
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: true}));
 
 var PORT = 8080; // default port 8080
 
 app.set('view engine', 'ejs');
 app.set('trust proxy', 1)
 
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended: true}));
 
 const urlDatabase = {
   sgq3y6: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  aJ48lW: { longURL: "https://www.google.ca", userID: "aJ48lW" }
+  sdjfhd: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 
 const users = {
@@ -167,14 +166,15 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   let userId = generateRandomString(6);
   let email = req.body.email;
+  let password = req.body.password;
   let hashedPassword = bcrypt.hashSync(req.body.password, 10);
   for (let user in users) {
     if (users[user].email === email) {
-      res.send("This email has already been taken");
+      return res.send("This email has already been taken");
     }
   }
-  if(email.length == 0 || hashedPassword.length == 0){
-    res.send("Please provide a valid email and password");
+  if(email === "" || password === ""){
+    return res.send("Please provide both email and password!");
   } else {
     users[userId] = {
       userId,
@@ -209,6 +209,7 @@ app.post("/login", (req, res) => {
     res.status(400);
     return res.send('Email and password cannot be empty');
   }
+  console.log(req.body)
   let user = getUserByEmailPassword(req.body.email, req.body.password);
 
   if(user) {
@@ -222,15 +223,14 @@ app.post("/login", (req, res) => {
 
 
 app.post("/logout", (req, res) => {
-  // res.clearCookie("uId");
   req.session = null
   res.redirect("/login");
 })
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);
   let generatedString = generateRandomString(6);
-  urlDatabase[generatedString] = req.body.longURL;
+  // urlDatabase[generatedString] = req.body.longURL;
+  urlDatabase[generatedString] = {longURL: req.body.longURL, userID: req.session.uId}
   console.log(urlDatabase);
   res.redirect("/urls/" + generatedString);
 });
@@ -244,14 +244,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL]
   res.redirect(longURL);
-});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 app.listen(PORT, () => {
