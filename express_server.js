@@ -53,10 +53,6 @@ function generateRandomString(length) {
 getUserByEmailPassword = (email, password) => {
   let user = null;
   for(let userId in users) {
-    console.log('currently processing ', userId)
-    console.log("email", email, "password", password)
-    console.log("users[userId].email", users[userId].email)
-    console.log("users[userId].password", users[userId].password)
     if(users[userId].email === email && bcrypt.compareSync(password, users[userId].password)) {
       user = users[userId];
     }
@@ -71,8 +67,6 @@ function urlsForUser(id) {
   let value = null;
   for (let shortURLs in urlDatabase) {
     if(urlDatabase[shortURLs].userID == id) {
-      console.log("urlDatabase with shortULRs:", urlDatabase[shortURLs].userID);
-      console.log("id passed into urlsforuser function: ", id);
       key = shortURLs;
       value = urlDatabase[shortURLs].longURL;
       urls[key] = value;
@@ -185,7 +179,6 @@ app.post("/register", (req, res) => {
       password: hashedPassword
     }
     req.session.uId = userId;
-    console.log(users);
     res.redirect("/urls")
   }
 });
@@ -208,14 +201,11 @@ app.get("/login", (req, res) =>{
 
 
 app.post("/login", (req, res) => {
-  console.log("req.body.email", req.body.email, "req.body.password", req.body.password )
   if (!req.body.email || !req.body.password) {
     res.status(400);
     return res.send('Email and password cannot be empty');
   }
-  console.log(req.body)
   let user = getUserByEmailPassword(req.body.email, req.body.password);
-  console.log(user);
   if(user) {
     req.session.uId = user.userId;
     res.redirect("/urls");
@@ -235,7 +225,6 @@ app.post("/urls", (req, res) => {
   let generatedString = generateRandomString(6);
   // urlDatabase[generatedString] = req.body.longURL;
   urlDatabase[generatedString] = {longURL: req.body.longURL, userID: req.session.uId}
-  console.log(urlDatabase);
   res.redirect("/urls/" + generatedString);
 });
 
