@@ -54,6 +54,9 @@ getUserByEmailPassword = (email, password) => {
   let user = null;
   for(let userId in users) {
     console.log('currently processing ', userId)
+    console.log("email", email, "password", password)
+    console.log("users[userId].email", users[userId].email)
+    console.log("users[userId].password", users[userId].password)
     if(users[userId].email === email && bcrypt.compareSync(password, users[userId].password)) {
       user = users[userId];
     }
@@ -179,7 +182,7 @@ app.post("/register", (req, res) => {
     users[userId] = {
       userId,
       email,
-      hashedPassword
+      password: hashedPassword
     }
     req.session.uId = userId;
     console.log(users);
@@ -205,13 +208,14 @@ app.get("/login", (req, res) =>{
 
 
 app.post("/login", (req, res) => {
+  console.log("req.body.email", req.body.email, "req.body.password", req.body.password )
   if (!req.body.email || !req.body.password) {
     res.status(400);
     return res.send('Email and password cannot be empty');
   }
   console.log(req.body)
   let user = getUserByEmailPassword(req.body.email, req.body.password);
-
+  console.log(user);
   if(user) {
     req.session.uId = user.userId;
     res.redirect("/urls");
